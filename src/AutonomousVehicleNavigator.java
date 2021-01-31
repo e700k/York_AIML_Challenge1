@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 public class AutonomousVehicleNavigator {
 
@@ -138,27 +136,23 @@ public class AutonomousVehicleNavigator {
             int[][] grid = getGrid(gridId);
             assert grid != null;
 
-            try {
-                switch(direction) {
-                    case North:
-                        return new GridState(gridState.posY - 1, gridState.posX, grid[gridState.posY - 1][gridState.posX]);
-                    case East:
-                        return new GridState(gridState.posY, gridState.posX + 1, grid[gridState.posY][gridState.posX + 1]);
-                    case South:
-                        return new GridState(gridState.posY + 1, gridState.posX, grid[gridState.posY + 1][gridState.posX]);
-                    case West:
-                        return new GridState(gridState.posY, gridState.posX - 1, grid[gridState.posY][gridState.posX - 1]);
-                }
+            switch(direction) {
+                case North:
+                    return new GridState(gridState.posY - 1, gridState.posX, grid[gridState.posY - 1][gridState.posX]);
+                case East:
+                    return new GridState(gridState.posY, gridState.posX + 1, grid[gridState.posY][gridState.posX + 1]);
+                case South:
+                    return new GridState(gridState.posY + 1, gridState.posX, grid[gridState.posY + 1][gridState.posX]);
+                case West:
+                    return new GridState(gridState.posY, gridState.posX - 1, grid[gridState.posY][gridState.posX - 1]);
             }
-            catch (Exception ex) {
-                System.out.println("error");
-            };
 
             return null;
         }
 
         static String GetMapAtState(SearchNode[] nodes, int gridId) {
             int[][] grid = getGrid(gridId);
+            assert grid != null;
             String[][] strGrid = new String[grid.length][grid[0].length];
 
             for (int y = 0; y < grid.length; y++)
@@ -175,8 +169,8 @@ public class AutonomousVehicleNavigator {
             }
 
             ArrayList<String> rows = new ArrayList<>();
-            for (int y = 0; y < strGrid.length; y++)
-                rows.add(String.join(" ", strGrid[y]));
+            for (String[] strings : strGrid)
+                rows.add(String.join(" ", strings));
             return String.join("\n", rows);
         }
 
