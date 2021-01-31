@@ -6,15 +6,16 @@ public class AutonomousVehicleNavigator {
 
     private final int[][] _grid;
     private final int _gridId;
-    private ArrayList<SearchNode> _frontier;
     private ArrayList<SearchNode> _exploredSet;
     private ArrayList<SearchNode> _solution;
     private final GridState _startingState;
+    static final int _jammedMarker = 1;
+    static final int _goalMarker = 3;
+    static final int _startMarker = 2;
 
     public AutonomousVehicleNavigator(int gridId) {
         _gridId = gridId;
         _grid = GridFactory.getGrid(gridId);
-        _frontier = new ArrayList<>();
         _exploredSet = new ArrayList<>();
         _startingState = GridFactory.getStartingState(gridId);
     }
@@ -22,7 +23,6 @@ public class AutonomousVehicleNavigator {
     public ArrayList<SearchNode> Solve() {
         for (int depthLimit = 0; depthLimit < 100; depthLimit++) {
             _solution = new ArrayList<>();
-            _frontier = new ArrayList<>();
             _exploredSet = new ArrayList<>();
             SearchStatus result = PerformDepthLimitedSearch(new SearchNode(_startingState, 0), depthLimit);
             if (result == SearchStatus.Solution)
@@ -34,13 +34,13 @@ public class AutonomousVehicleNavigator {
     private SearchStatus PerformDepthLimitedSearch(SearchNode startNode, int depthLimit) {
         String indent = " ".repeat(startNode.depth);
         boolean hasCutOff = false;
+
         _solution.add(startNode);
         System.out.println(indent + "Starting expanding from " + startNode.toString());
 
         if (isGoalState(startNode.gridState)) {
             return SearchStatus.Solution;
         }
-
         if (depthLimit == 0) {
             System.out.println(indent + "CutOff: " + startNode.toString());
             return SearchStatus.CutOff;
@@ -57,7 +57,6 @@ public class AutonomousVehicleNavigator {
                 _solution.add(child);
                 return SearchStatus.Solution;
             }
-
             if (isJammed(child.gridState)) {
                 System.out.println(indent + "This node is jammed.");
                 continue;
@@ -74,11 +73,9 @@ public class AutonomousVehicleNavigator {
                     System.out.println(indent + "This node is already explored");
                     continue;
                 }
-
             }
 
             System.out.println(indent + "This node is clear.");
-
             System.out.println(indent + "Moving to " + child.toString());
             SearchStatus childStatus = PerformDepthLimitedSearch(child, depthLimit - 1);
 
@@ -86,7 +83,6 @@ public class AutonomousVehicleNavigator {
                 hasCutOff = true;
                 _solution.remove(child);
             }
-
             if (childStatus == SearchStatus.Solution)
                 return childStatus;
 
@@ -99,16 +95,12 @@ public class AutonomousVehicleNavigator {
         return SearchStatus.Failure;
     }
 
-    private boolean isClear(GridState state) {
-        return _grid[state.posY][state.posX] == 0;
-    }
-
     private boolean isJammed(GridState state) {
-        return _grid[state.posY][state.posX] == 1;
+        return _grid[state.posY][state.posX] == _jammedMarker;
     }
 
     private boolean isGoalState(GridState state) {
-        return _grid[state.posY][state.posX] == 3;
+        return _grid[state.posY][state.posX] == _goalMarker;
     }
 
     static class GridFactory {
@@ -130,7 +122,7 @@ public class AutonomousVehicleNavigator {
 
             for (int y = 0; y < grid.length; y++)
                 for (int x = 0; x < grid[y].length; x++)
-                    if (grid[y][x] == 2)
+                    if (grid[y][x] == _startMarker)
                         return new GridState(y, x, grid[y][x]);
 
             return null;
@@ -274,18 +266,18 @@ public class AutonomousVehicleNavigator {
                 {0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0}
         };
         static int[][] grid6 = new int [][] {
-                {0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 3},
-                {0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0},
+                {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3},
+                {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0},
                 {0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 2, 1, 0, 0},
                 {0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0},
                 {0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                {1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+                {0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                {0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                {0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+                {0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0}
