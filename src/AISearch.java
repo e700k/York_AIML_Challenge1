@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 public class AISearch {
 
     public static void main(String[] args) {
-        int gridId = 6;
+        int gridId = 0;
         AutonomousVehicleNavigator navigator = new AutonomousVehicleNavigator(gridId);
         ArrayList<SearchNode> result = navigator.Solve();
 

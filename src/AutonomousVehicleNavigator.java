@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class AutonomousVehicleNavigator {
 
@@ -11,6 +12,7 @@ public class AutonomousVehicleNavigator {
     static final int _jammedMarker = 1;
     static final int _goalMarker = 3;
     static final int _startMarker = 2;
+    static final int _clearMarker = 0;
 
     public AutonomousVehicleNavigator(int gridId) {
         _gridId = gridId;
@@ -107,8 +109,18 @@ public class AutonomousVehicleNavigator {
     }
 
     static class GridFactory {
+        static final double _randomGridJammedRatio = 0.18;
+        static final int _randomGridWidth = 50;
+        static final int _randomGridHeight = 50;
+
+        static int[][] _randomGrid;
+
         public static int[][] getGrid(int gridId) {
             switch (gridId) {
+                case 0:
+                    if (_randomGrid == null)
+                        _randomGrid = randomizeGrid();
+                    return _randomGrid;
                 case 1: return grid1;
                 case 2: return grid2;
                 case 3: return grid3;
@@ -117,6 +129,23 @@ public class AutonomousVehicleNavigator {
                 case 6: return grid6;
             }
             return null;
+        }
+
+        static int[][] randomizeGrid() {
+            int[][] result = new int[_randomGridHeight][_randomGridWidth];
+            Random random = new Random(new Random().nextInt());
+
+            for (int y = 0; y < result.length; y++)
+                for (int x = 0; x < result[y].length; x++)
+                    if (random.nextDouble() < _randomGridJammedRatio)
+                        result[y][x] = _jammedMarker;
+                    else
+                        result[y][x] = _clearMarker;
+
+            result[random.nextInt(_randomGridHeight)][random.nextInt(_randomGridWidth)] = _startMarker;
+            result[random.nextInt(_randomGridHeight)][random.nextInt(_randomGridWidth)] = _goalMarker;
+
+            return result;
         }
 
         static GridState getStartingState(int gridId) {
