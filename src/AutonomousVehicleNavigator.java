@@ -1,5 +1,7 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class AutonomousVehicleNavigator {
@@ -109,7 +111,7 @@ public class AutonomousVehicleNavigator {
     }
 
     static class GridFactory {
-        static final double _randomGridJammedRatio = 0.18;
+        static final double _randomGridJammedRatio = 0.25;
         static final int _randomGridWidth = 50;
         static final int _randomGridHeight = 50;
 
@@ -184,7 +186,7 @@ public class AutonomousVehicleNavigator {
             return null;
         }
 
-        static String GetMapAtState(SearchNode[] nodes, int gridId, ArrayList<SearchNode> exploredNodes) {
+        static String GetMapAtState(SearchNode[] nodes, int gridId, List<SearchNode> exploredNodes) {
             if (exploredNodes == null)
                 exploredNodes = new ArrayList<>();
 
@@ -204,9 +206,9 @@ public class AutonomousVehicleNavigator {
                 if (i == 0)
                     strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "#";
                 else if (i == nodes.length - 1)
-                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "¶";
+                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "@";
                 else
-                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "·";
+                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = ".";
             }
 
             ArrayList<String> rows = new ArrayList<>();
