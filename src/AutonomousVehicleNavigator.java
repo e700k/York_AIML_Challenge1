@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AutonomousVehicleNavigator {
 
@@ -91,6 +92,10 @@ public class AutonomousVehicleNavigator {
             return SearchStatus.CutOff;
 
         return SearchStatus.Failure;
+    }
+
+    public int getExploredCount() {
+        return _exploredSet.size();
     }
 
     private boolean isJammed(GridState state) {
@@ -310,6 +315,7 @@ class GridState {
         if (posX > 0) actions.add(MapDirection.West);
         if (posY < gridSize[0]) actions.add(MapDirection.South);
         if (posX < gridSize[1]) actions.add(MapDirection.East);
+        Collections.shuffle(actions);
         return actions;
     }
 }

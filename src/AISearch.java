@@ -16,6 +16,7 @@ public class AISearch {
                         result.stream().limit(j + 1).collect(Collectors.toList()).toArray(new SearchNode[j + 1]),
                         gridId));
             }
+            System.out.println("Explored nodes: " + navigator.getExploredCount());
         }
         else
             System.out.println("No solution found.");
