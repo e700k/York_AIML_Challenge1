@@ -6,7 +6,7 @@ public class AutonomousVehicleNavigator {
 
     private final int[][] _grid;
     private final int _gridId;
-    private ArrayList<SearchNode> _exploredSet;
+    public ArrayList<SearchNode> exploredSet;
     private ArrayList<SearchNode> _solution;
     private final GridState _startingState;
     static final int _jammedMarker = 1;
@@ -17,14 +17,14 @@ public class AutonomousVehicleNavigator {
     public AutonomousVehicleNavigator(int gridId) {
         _gridId = gridId;
         _grid = GridFactory.getGrid(gridId);
-        _exploredSet = new ArrayList<>();
+        exploredSet = new ArrayList<>();
         _startingState = GridFactory.getStartingState(gridId);
     }
 
     public ArrayList<SearchNode> Solve() {
         for (int depthLimit = 0; depthLimit < 100; depthLimit++) {
             _solution = new ArrayList<>();
-            _exploredSet = new ArrayList<>();
+            exploredSet = new ArrayList<>();
             SearchStatus result = PerformDepthLimitedSearch(new SearchNode(_startingState, 0), depthLimit);
             if (result == SearchStatus.Solution)
                 return _solution;
@@ -47,7 +47,7 @@ public class AutonomousVehicleNavigator {
             return SearchStatus.CutOff;
         }
 
-        _exploredSet.add(startNode);
+        exploredSet.add(startNode);
 
         for (MapDirection direction : startNode.gridState.getActions(GridFactory.getGridSize(_gridId))) {
             SearchNode child = new SearchNode(GridFactory.getNewGridState(_gridId, startNode.gridState, direction),
@@ -63,11 +63,11 @@ public class AutonomousVehicleNavigator {
                 continue;
             }
 
-            SearchNode inExplored = _exploredSet.stream().filter(node -> node.gridState.posX == child.gridState.posX
+            SearchNode inExplored = exploredSet.stream().filter(node -> node.gridState.posX == child.gridState.posX
                     && node.gridState.posY == child.gridState.posY).findAny().orElse(null);
             if (inExplored != null) {
                 if (inExplored.depth > child.depth) {
-                    _exploredSet.remove(inExplored);
+                    exploredSet.remove(inExplored);
                     System.out.println(indent + "This node was explored at a smaller depth; revisiting.");
                 }
                 else {
@@ -97,7 +97,7 @@ public class AutonomousVehicleNavigator {
     }
 
     public int getExploredCount() {
-        return _exploredSet.size();
+        return exploredSet.size();
     }
 
     private boolean isJammed(GridState state) {
@@ -184,7 +184,10 @@ public class AutonomousVehicleNavigator {
             return null;
         }
 
-        static String GetMapAtState(SearchNode[] nodes, int gridId) {
+        static String GetMapAtState(SearchNode[] nodes, int gridId, ArrayList<SearchNode> exploredNodes) {
+            if (exploredNodes == null)
+                exploredNodes = new ArrayList<>();
+
             int[][] grid = getGrid(gridId);
             assert grid != null;
             String[][] strGrid = new String[grid.length][grid[0].length];
@@ -193,13 +196,17 @@ public class AutonomousVehicleNavigator {
                 for (int x = 0; x < grid[y].length; x++)
                     strGrid[y][x] = String.valueOf(grid[y][x]);
 
+            for (SearchNode node : exploredNodes) {
+                strGrid[node.gridState.posY][node.gridState.posX] = "+";
+            }
+
             for (int i = 0; i < nodes.length; i++) {
                 if (i == 0)
-                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "*";
+                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "#";
                 else if (i == nodes.length - 1)
-                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "x";
+                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "¶";
                 else
-                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = ".";
+                    strGrid[nodes[i].gridState.posY][nodes[i].gridState.posX] = "·";
             }
 
             ArrayList<String> rows = new ArrayList<>();

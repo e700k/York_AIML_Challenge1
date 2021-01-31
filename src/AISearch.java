@@ -14,7 +14,7 @@ public class AISearch {
                 System.out.println(result.get(j).toString() + " -> ");
                 System.out.println(AutonomousVehicleNavigator.GridFactory.GetMapAtState(
                         result.stream().limit(j + 1).collect(Collectors.toList()).toArray(new SearchNode[j + 1]),
-                        gridId));
+                        gridId, navigator.exploredSet));
             }
             System.out.println("Explored nodes: " + navigator.getExploredCount());
         }
