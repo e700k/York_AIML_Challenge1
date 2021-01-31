@@ -7,11 +7,11 @@ public class AISearch {
 
     public static void main(String[] args) {
         //Build an array.
-        int gridId = 5;
+        int gridId = 6;
         AutonomousVehicleNavigator navigator = new AutonomousVehicleNavigator(gridId);
         ArrayList<SearchNode> result = navigator.Solve();
 
-        if (navigator != null) {
+        if (result != null) {
             System.out.println("Solution found:");
             for (int j = 0; j < result.size(); j++) {
                 System.out.println(result.get(j).toString() + " -> ");
@@ -20,5 +20,7 @@ public class AISearch {
                         gridId));
             }
         }
+        else
+            System.out.println("No solution found.");
     }
 }
